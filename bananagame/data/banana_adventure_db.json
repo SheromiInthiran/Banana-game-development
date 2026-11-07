@@ -1,0 +1,174 @@
+{
+  "players": {
+    "admin": {
+      "id": "admin",
+      "nickname": "Banana King",
+      "avatar": "👑",
+      "email": "admin@banana.com",
+      "totalPoints": 120,
+      "xp": 120,
+      "level": 2,
+      "levelName": "Banana Explorer",
+      "completedGames": 12,
+      "correctAnswers": 10,
+      "streak": 3,
+      "achievements": [
+        {
+          "id": "first_victory",
+          "title": "First Victory",
+          "unlockedAt": "2026-11-04T10:00:00.000Z"
+        },
+        {
+          "id": "quick_thinker",
+          "title": "Quick Thinker",
+          "unlockedAt": "2026-11-04T10:05:00.000Z"
+        },
+        {
+          "id": "star_collector",
+          "title": "Star Collector",
+          "unlockedAt": "2026-11-05T08:00:00.000Z"
+        }
+      ],
+      "dailyChallenge": {
+        "lastCompletedDate": "2026-11-04",
+        "streak": 2
+      },
+      "history": [
+        {
+          "id": "hist_1",
+          "questionUrl": "https://www.sanfoh.com/uob/banana/data/sample1.png",
+          "userAnswer": 4,
+          "solution": 4,
+          "isCorrect": true,
+          "pointsAwarded": 15,
+          "timestamp": "2026-11-05T08:00:00.000Z",
+          "level": "medium"
+        }
+      ]
+    },
+    "sheromi": {
+      "id": "sheromi",
+      "nickname": "Jungle Sheromi",
+      "avatar": "🍌",
+      "email": "sheromiinthiran@gmail.com",
+      "totalPoints": 535,
+      "xp": 535,
+      "level": 3,
+      "levelName": "Banana Master",
+      "completedGames": 11,
+      "correctAnswers": 9,
+      "streak": 1,
+      "highestStreak": 3,
+      "bestScore": 0,
+      "achievements": [
+        {
+          "id": "first_victory",
+          "title": "First Victory",
+          "unlockedAt": "2026-11-04T11:00:00.000Z"
+        },
+        {
+          "id": "quick_thinker",
+          "title": "Quick Thinker",
+          "unlockedAt": "2026-11-04T11:02:00.000Z"
+        },
+        {
+          "id": "five_correct",
+          "title": "5 Correct Answers",
+          "description": "Successfully solve 5 banana math puzzles.",
+          "unlockedAt": "2026-11-06T07:18:59.591Z"
+        },
+        {
+          "id": "first_100_pts",
+          "title": "First 100 Points",
+          "description": "Reach 100 total banana points.",
+          "unlockedAt": "2026-11-06T07:18:59.591Z"
+        },
+        {
+          "id": "daily_champion",
+          "title": "Daily Champion",
+          "description": "Complete today’s magical Daily Jungle Quest.",
+          "unlockedAt": "2026-11-06T07:18:59.617Z"
+        },
+        {
+          "id": "ten_games",
+          "title": "10 Games Completed",
+          "description": "Play and complete 10 games.",
+          "unlockedAt": "2026-11-06T07:19:31.382Z"
+        }
+      ],
+      "dailyChallenge": {
+        "lastCompletedDate": "2026-11-06",
+        "streak": 2
+      },
+      "history": [
+        {
+          "id": "hist_1793951378741_m3dn",
+          "questionUrl": "https://www.sanfoh.com/uob/banana/data/t1023c22283cc8445d5c0d348e9n2.png",
+          "userAnswer": 2,
+          "solution": 2,
+          "isCorrect": true,
+          "pointsAwarded": 125,
+          "level": "easy",
+          "timeTaken": 36,
+          "timestamp": "2026-11-06T07:49:38.741Z"
+        },
+        {
+          "id": "hist_1793949571382_ig42",
+          "questionUrl": "https://www.sanfoh.com/uob/banana/data/te220a5ae4b48743784a1b79c2fn110.png",
+          "userAnswer": 2,
+          "solution": 0,
+          "isCorrect": false,
+          "pointsAwarded": 0,
+          "level": "easy",
+          "timeTaken": 16,
+          "timestamp": "2026-11-06T07:19:31.382Z"
+        },
+        {
+          "id": "hist_1793949539591_evwg",
+          "questionUrl": "https://www.sanfoh.com/uob/banana/data/tde4a7bef40faff4194de5e6367n100.png",
+          "userAnswer": 0,
+          "solution": 0,
+          "isCorrect": true,
+          "pointsAwarded": 175,
+          "level": "easy",
+          "timeTaken": 23,
+          "timestamp": "2026-11-06T07:18:59.591Z"
+        },
+        {
+          "id": "hist_2",
+          "questionUrl": "https://www.sanfoh.com/uob/banana/data/sample2.png",
+          "userAnswer": 7,
+          "solution": 7,
+          "isCorrect": true,
+          "pointsAwarded": 15,
+          "timestamp": "2026-11-05T09:30:00.000Z",
+          "level": "easy"
+        }
+      ],
+      "sessions": [],
+      "inventory": [
+        "char_benny",
+        "hat_none",
+        "glass_none",
+        "theme_jungle"
+      ],
+      "equipped": {
+        "characters": "char_benny",
+        "hats": "hat_none",
+        "glasses": "glass_none",
+        "themes": "theme_jungle"
+      },
+      "createdAt": "2026-11-06T05:44:04.439Z"
+    }
+  },
+  "processedSubmissions": {
+    "sheromi_https://www.sanfoh.com/uob/banana/data/tde4a7bef40faff4194de5e6367n100.png": {
+      "timestamp": 1793949539591,
+      "pointsAwarded": 175
+    },
+    "sheromi_https://www.sanfoh.com/uob/banana/data/t1023c22283cc8445d5c0d348e9n2.png": {
+      "timestamp": 1793951378741,
+      "pointsAwarded": 125
+    }
+  }
+}

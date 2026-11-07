@@ -1,0 +1,198 @@
+export const SHOP_CATEGORIES = [
+  { id: 'characters', name: 'Banana Heroes', icon: '🍌' },
+  { id: 'hats', name: 'Fun Hats', icon: '🎩' },
+  { id: 'glasses', name: 'Cool Glasses', icon: '🕶️' },
+  { id: 'themes', name: 'Jungle Themes', icon: '🎨' },
+]
+
+export const SHOP_ITEMS = [
+  // --- Characters ---
+  {
+    id: 'char_benny',
+    category: 'characters',
+    name: 'Classic Benny',
+    description: 'The cheerful and curious golden banana explorer.',
+    cost: 0,
+    icon: '🍌',
+    badge: 'Starter',
+  },
+  {
+    id: 'char_ninja',
+    category: 'characters',
+    name: 'Ninja Benny',
+    description: 'Swift as the jungle wind with ninja headwrap.',
+    cost: 300,
+    icon: '🥷',
+    badge: 'Popular',
+  },
+  {
+    id: 'char_king',
+    category: 'characters',
+    name: 'King Benny',
+    description: 'Royalty of the banana kingdom with a sparkling crown.',
+    cost: 500,
+    icon: '👑',
+    badge: 'Royal',
+  },
+  {
+    id: 'char_cosmic',
+    category: 'characters',
+    name: 'Cosmic Benny',
+    description: 'A galaxy-exploring banana with magical cosmic aura.',
+    cost: 800,
+    icon: '🚀',
+    badge: 'Epic',
+  },
+  {
+    id: 'char_gold',
+    category: 'characters',
+    name: 'Golden Benny',
+    description: 'The legendary solid-gold banana trophy come to life!',
+    cost: 1200,
+    icon: '✨',
+    badge: 'Legendary',
+  },
+
+  // --- Hats ---
+  {
+    id: 'hat_none',
+    category: 'hats',
+    name: 'Natural Leaf',
+    description: 'Just Benny’s fresh natural green banana stem.',
+    cost: 0,
+    icon: '🍃',
+  },
+  {
+    id: 'hat_fedora',
+    category: 'hats',
+    name: 'Explorer Fedora',
+    description: 'Essential gear for trekking deep jungle trails.',
+    cost: 150,
+    icon: '🤠',
+  },
+  {
+    id: 'hat_party',
+    category: 'hats',
+    name: 'Party Cone Hat',
+    description: 'Ready to dance and celebrate every correct answer!',
+    cost: 200,
+    icon: '🎉',
+  },
+  {
+    id: 'hat_crown',
+    category: 'hats',
+    name: 'Jungle Tiara',
+    description: 'Sparkling emerald crown crafted by jungle monkeys.',
+    cost: 350,
+    icon: '👑',
+  },
+  {
+    id: 'hat_viking',
+    category: 'hats',
+    name: 'Viking Horns',
+    description: 'Brave viking helmet for fearless problem solvers.',
+    cost: 400,
+    icon: '⚔️',
+  },
+  {
+    id: 'hat_chef',
+    category: 'hats',
+    name: 'Banana Chef Toque',
+    description: 'Cook up the tastiest math equations in the kitchen.',
+    cost: 250,
+    icon: '🧑‍🍳',
+  },
+
+  // --- Glasses ---
+  {
+    id: 'glass_none',
+    category: 'glasses',
+    name: 'Bare Eyes',
+    description: 'Clear cheerful eyes with an adventurous sparkle.',
+    cost: 0,
+    icon: '👀',
+  },
+  {
+    id: 'glass_shades',
+    category: 'glasses',
+    name: 'Cool Sunglasses',
+    description: 'Classic dark sunglasses for maximum jungle swag.',
+    cost: 150,
+    icon: '🕶️',
+  },
+  {
+    id: 'glass_nerd',
+    category: 'glasses',
+    name: 'Math Genius Specs',
+    description: 'Round professor spectacles for spotting puzzle clues.',
+    cost: 180,
+    icon: '👓',
+  },
+  {
+    id: 'glass_star',
+    category: 'glasses',
+    name: 'Star Party Specs',
+    description: 'Shining star frames that radiate positive energy.',
+    cost: 250,
+    icon: '⭐',
+  },
+  {
+    id: 'glass_gold',
+    category: 'glasses',
+    name: 'Gold Aviators',
+    description: 'Gleaming golden aviator glasses with tinted glass.',
+    cost: 300,
+    icon: '✨',
+  },
+  {
+    id: 'glass_vr',
+    category: 'glasses',
+    name: 'VR Cyber Visor',
+    description: 'Futuristic high-tech visor calculating puzzle odds.',
+    cost: 450,
+    icon: '🥽',
+  },
+
+  // --- Themes ---
+  {
+    id: 'theme_jungle',
+    category: 'themes',
+    name: 'Emerald Jungle',
+    description: 'Lush tropical greenery with gentle sunlight rays.',
+    cost: 0,
+    icon: '🌴',
+  },
+  {
+    id: 'theme_sunset',
+    category: 'themes',
+    name: 'Sunset Canopy',
+    description: 'Warm golden orange sunset over coconut palm trees.',
+    cost: 250,
+    icon: '🌅',
+  },
+  {
+    id: 'theme_gold',
+    category: 'themes',
+    name: 'Golden Temple',
+    description: 'Ancient golden pyramid hidden deep inside the vines.',
+    cost: 500,
+    icon: '🏛️',
+  },
+  {
+    id: 'theme_night',
+    category: 'themes',
+    name: 'Starry Night Jungle',
+    description: 'Enchanted nighttime canopy lit by glowing fireflies.',
+    cost: 750,
+    icon: '🌌',
+  },
+]
+
+export const DEFAULT_INVENTORY = ['char_benny', 'hat_none', 'glass_none', 'theme_jungle']
+
+export const DEFAULT_EQUIPPED = {
+  characters: 'char_benny',
+  hats: 'hat_none',
+  glasses: 'glass_none',
+  themes: 'theme_jungle',
+}

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bananaYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#fff382" />
+      <stop offset="40%" stopColor="#ffd21f" />
+      <stop offset="100%" stopColor="#f59e0b" />
+    </linearGradient>
+    <linearGradient id="stemGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#8be342" />
+      <stop offset="100%" stopColor="#358f1f" />
+    </linearGradient>
+  </defs>
+  <!-- Banana Curve -->
+  <path d="M 14 10 C 26 6, 42 16, 52 34 C 58 46, 54 56, 46 58 C 36 60, 24 50, 16 38 C 10 28, 10 18, 14 10 Z" fill="url(#bananaYellow)" stroke="#7c4a03" stroke-width="2.5" />
+  <!-- Stem -->
+  <path d="M 14 10 C 13 8, 12 5, 11 3 C 14 2, 17 4, 18 8 Z" fill="url(#stemGreen)" stroke="#225712" stroke-width="1.5" />
+  <!-- Tip -->
+  <path d="M 46 58 C 48 59, 50 58, 51 56 C 49 55, 47 56, 46 58 Z" fill="#6d4c14" />
+  <!-- Cute Face -->
+  <circle cx="28" cy="30" r="3" fill="#2c1e18" />
+  <circle cx="38" cy="36" r="3" fill="#2c1e18" />
+  <path d="M 30 38 Q 35 44 40 40" stroke="#2c1e18" stroke-width="2" stroke-linecap="round" fill="none" />
+  <circle cx="25" cy="34" r="2.5" fill="#ff7675" opacity="0.6" />
+  <circle cx="41" cy="42" r="2.5" fill="#ff7675" opacity="0.6" />
+</svg>
