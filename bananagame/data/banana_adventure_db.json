@@ -51,13 +51,13 @@
       "nickname": "Jungle Sheromi",
       "avatar": "🍌",
       "email": "sheromiinthiran@gmail.com",
-      "totalPoints": 535,
-      "xp": 535,
+      "totalPoints": 360,
+      "xp": 810,
       "level": 3,
       "levelName": "Banana Master",
-      "completedGames": 11,
-      "correctAnswers": 9,
-      "streak": 1,
+      "completedGames": 12,
+      "correctAnswers": 10,
+      "streak": 2,
       "highestStreak": 3,
       "bestScore": 0,
       "achievements": [
@@ -97,10 +97,21 @@
         }
       ],
       "dailyChallenge": {
-        "lastCompletedDate": "2026-11-06",
-        "streak": 2
+        "lastCompletedDate": "2026-11-10",
+        "streak": 3
       },
       "history": [
+        {
+          "id": "hist_1794290995651_yfs9",
+          "questionUrl": "https://www.sanfoh.com/uob/banana/data/tedb951c740ef479cb13842fb89n14.png",
+          "userAnswer": 4,
+          "solution": 4,
+          "isCorrect": true,
+          "pointsAwarded": 125,
+          "level": "easy",
+          "timeTaken": 13,
+          "timestamp": "2026-11-10T06:09:55.651Z"
+        },
         {
           "id": "hist_1793951378741_m3dn",
           "questionUrl": "https://www.sanfoh.com/uob/banana/data/t1023c22283cc8445d5c0d348e9n2.png",
@@ -150,11 +161,13 @@
         "char_benny",
         "hat_none",
         "glass_none",
-        "theme_jungle"
+        "theme_jungle",
+        "char_ninja",
+        "hat_fedora"
       ],
       "equipped": {
         "characters": "char_benny",
-        "hats": "hat_none",
+        "hats": "hat_fedora",
         "glasses": "glass_none",
         "themes": "theme_jungle"
       },
@@ -168,6 +181,10 @@
     },
     "sheromi_https://www.sanfoh.com/uob/banana/data/t1023c22283cc8445d5c0d348e9n2.png": {
       "timestamp": 1793951378741,
+      "pointsAwarded": 125
+    },
+    "sheromi_https://www.sanfoh.com/uob/banana/data/tedb951c740ef479cb13842fb89n14.png": {
+      "timestamp": 1794290995651,
       "pointsAwarded": 125
     }
   }
