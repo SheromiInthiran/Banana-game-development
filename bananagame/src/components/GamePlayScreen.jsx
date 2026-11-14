@@ -304,11 +304,13 @@ export default function GamePlayScreen({
               </div>
             ) : currentQuestion?.imageUrl ? (
               <div className="puzzle-img-container">
-                <img
-                  src={currentQuestion.imageUrl}
-                  alt="Banana Puzzle"
-                  className="main-puzzle-image"
-                />
+                <div className="puzzle-img-crop-frame">
+                  <img
+                    src={currentQuestion.imageUrl}
+                    alt="Banana Puzzle"
+                    className="main-puzzle-image"
+                  />
+                </div>
                 {/* Zoom toggle button */}
                 <button
                   type="button"
