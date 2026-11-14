@@ -2662,8 +2662,9 @@ button, input {
 .gameplay-status-pill.warning { background: #fef9c3; color: #854d0e; }
 
 .gameplay-image-stage {
+  position: relative;
   min-height: 280px;
-  background: #fefce8;
+  background: #ffffff;
   border: 3.5px solid #2f2017;
   border-radius: 24px;
   overflow: hidden;
@@ -2672,12 +2673,32 @@ button, input {
   box-shadow: inset 0 4px 10px rgba(0,0,0,0.06);
 }
 
+.puzzle-img-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ffffff;
+  padding: 10px;
+}
+
+.puzzle-img-crop-frame {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  background: #ffffff;
+}
+
 .main-puzzle-image {
   width: 100%;
   max-height: 320px;
   object-fit: contain;
   display: block;
   background: #ffffff;
+  clip-path: inset(12% 0 0 0);
+  margin-top: -6%;
 }
 
 .stage-loading-box,
@@ -3985,7 +4006,7 @@ button, input {
 .zoom-toggle-btn:hover {
   background: #fef08a;
 }
-.stage-zoomed .main-puzzle-image {
+.stage-zoomed .puzzle-img-crop-frame {
   transform: scale(1.22);
   transition: transform 0.25s ease;
 }

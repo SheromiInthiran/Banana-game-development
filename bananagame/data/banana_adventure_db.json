@@ -51,14 +51,14 @@
       "nickname": "Jungle Sheromi",
       "avatar": "🍌",
       "email": "sheromiinthiran@gmail.com",
-      "totalPoints": 723,
-      "xp": 1173,
+      "totalPoints": 1323,
+      "xp": 1773,
       "level": 4,
       "levelName": "Banana Champion",
-      "completedGames": 14,
-      "correctAnswers": 12,
-      "streak": 4,
-      "highestStreak": 4,
+      "completedGames": 16,
+      "correctAnswers": 14,
+      "streak": 6,
+      "highestStreak": 6,
       "bestScore": 0,
       "achievements": [
         {
@@ -100,13 +100,41 @@
           "title": "Puzzle Master",
           "description": "Solve a Hard level puzzle on first attempt.",
           "unlockedAt": "2026-11-10T08:01:45.843Z"
+        },
+        {
+          "id": "perfect_streak",
+          "title": "Perfect Streak",
+          "description": "Answer 5 puzzles correctly in a row.",
+          "unlockedAt": "2026-11-14T12:40:43.318Z"
         }
       ],
       "dailyChallenge": {
-        "lastCompletedDate": "2026-11-10",
-        "streak": 3
+        "lastCompletedDate": "2026-11-14",
+        "streak": 4
       },
       "history": [
+        {
+          "id": "hist_1794660084983_g8if",
+          "questionUrl": "https://www.sanfoh.com/uob/banana/data/t27f21a4fa747ab5346ef03c14dn104.png",
+          "userAnswer": 4,
+          "solution": 4,
+          "isCorrect": true,
+          "pointsAwarded": 225,
+          "level": "easy",
+          "timeTaken": 37,
+          "timestamp": "2026-11-14T12:41:24.983Z"
+        },
+        {
+          "id": "hist_1794660043318_lrwu",
+          "questionUrl": "https://www.sanfoh.com/uob/banana/data/t3865e2ea066a0c32591523e3a8n19.png",
+          "userAnswer": 9,
+          "solution": 9,
+          "isCorrect": true,
+          "pointsAwarded": 225,
+          "level": "easy",
+          "timeTaken": 310,
+          "timestamp": "2026-11-14T12:40:43.318Z"
+        },
         {
           "id": "hist_1794297705843_q4th",
           "questionUrl": "https://www.sanfoh.com/uob/banana/data/t521e7aff33c972c34c8b867b4bn119.png",
@@ -222,6 +250,14 @@
     "sheromi_https://www.sanfoh.com/uob/banana/data/t521e7aff33c972c34c8b867b4bn119.png": {
       "timestamp": 1794297705843,
       "pointsAwarded": 188
+    },
+    "sheromi_https://www.sanfoh.com/uob/banana/data/t3865e2ea066a0c32591523e3a8n19.png": {
+      "timestamp": 1794660043317,
+      "pointsAwarded": 225
+    },
+    "sheromi_https://www.sanfoh.com/uob/banana/data/t27f21a4fa747ab5346ef03c14dn104.png": {
+      "timestamp": 1794660084983,
+      "pointsAwarded": 225
     }
   }
 }
