@@ -12,6 +12,7 @@ import ShopView from './components/ShopView'
 import ProfileView from './components/ProfileView'
 import DailyChallengeModal from './components/DailyChallengeModal'
 import LevelUpModal from './components/LevelUpModal'
+import LoginMusicControl from './components/LoginMusicControl'
 import {
   getPlayerProfile,
   updatePlayerProfile,
@@ -155,6 +156,55 @@ function validatePassword(value) {
   return ''
 }
 
+const SESSION_COOKIE_NAME = 'banana_session_cookie'
+const SESSION_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
+
+function getCookie(name) {
+  if (typeof document === 'undefined') return ''
+  const cookieString = document.cookie || ''
+  const match = cookieString
+    .split('; ')
+    .find((entry) => entry.startsWith(`${name}=`))
+  return match ? decodeURIComponent(match.split('=').slice(1).join('=')) : ''
+}
+
+function setCookie(name, value, maxAgeSeconds = SESSION_COOKIE_MAX_AGE) {
+  if (typeof document === 'undefined') return
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; SameSite=Lax`
+}
+
+function deleteCookie(name) {
+  if (typeof document === 'undefined') return
+  document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`
+}
+
+function getStoredSessionUser() {
+  try {
+    const cookieUser = getCookie(SESSION_COOKIE_NAME)
+    if (cookieUser) {
+      return JSON.parse(cookieUser)
+    }
+
+    const raw = localStorage.getItem(SESSION_STORAGE_KEY) || localStorage.getItem('banana_session')
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+function persistSessionUser(user) {
+  if (user) {
+    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(user))
+    localStorage.setItem('banana_session', JSON.stringify(user))
+    setCookie(SESSION_COOKIE_NAME, JSON.stringify(user), SESSION_COOKIE_MAX_AGE)
+    return
+  }
+
+  localStorage.removeItem(SESSION_STORAGE_KEY)
+  localStorage.removeItem('banana_session')
+  deleteCookie(SESSION_COOKIE_NAME)
+}
+
 // Banana API question fetcher with timestamp cache-buster
 async function fetchBananaQuestion(apiUrl = BANANA_API_URL) {
   const cacheBuster = `out=json&_t=${Date.now()}`
@@ -240,21 +290,8 @@ function App() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
 
   const googleInitRef = useRef(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    try {
-      return Boolean(localStorage.getItem(SESSION_STORAGE_KEY) || localStorage.getItem('banana_session'))
-    } catch {
-      return false
-    }
-  })
-  const [sessionUser, setSessionUser] = useState(() => {
-    try {
-      const user = localStorage.getItem(SESSION_STORAGE_KEY) || localStorage.getItem('banana_session')
-      return user ? JSON.parse(user) : null
-    } catch {
-      return null
-    }
-  })
+  const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(getStoredSessionUser()))
+  const [sessionUser, setSessionUser] = useState(() => getStoredSessionUser())
 
   // Sound Dispatcher
   const triggerSound = (type) => {
@@ -468,7 +505,7 @@ function App() {
 
           setMascotMood('celebrating')
           setShowConfetti(true)
-          localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(googleUser))
+          persistSessionUser(googleUser)
           setSessionUser(googleUser)
           setTimeout(() => {
             setIsLoggedIn(true)
@@ -536,7 +573,7 @@ function App() {
     setAuthMessage({ type: 'success', text: `Welcome, ${matchedUser.name}! Entering the Jungle... 🍌` })
 
     setTimeout(() => {
-      localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(matchedUser))
+      persistSessionUser(matchedUser)
       setSessionUser(matchedUser)
       setIsLoggedIn(true)
     }, 850)
@@ -717,8 +754,7 @@ function App() {
 
   const handleLogout = () => {
     triggerSound('click')
-    localStorage.removeItem(SESSION_STORAGE_KEY)
-    localStorage.removeItem('banana_session')
+    persistSessionUser(null)
     setIsLoggedIn(false)
     setSessionUser(null)
     setPlayerProfile(null)
@@ -758,6 +794,7 @@ function App() {
       >
         <JungleWorld mousePos={mousePos} />
         <ConfettiEffect active={showConfetti} />
+        <LoginMusicControl />
 
         <div className="banana-game-stage">
           <div className="stage-mascot-col">
