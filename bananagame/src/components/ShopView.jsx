@@ -7,6 +7,7 @@ export default function ShopView({
   playerProfile,
   onUpdatePlayerProfile,
   soundEnabled = true,
+  onSelectTheme,
 }) {
   const [activeCategory, setActiveCategory] = useState('characters')
   const [processingId, setProcessingId] = useState(null)
@@ -90,6 +91,9 @@ export default function ShopView({
         type: 'success',
         text: `Awesome! You are now wearing "${item.name}"!`,
       })
+      if (item.category === 'themes' && onSelectTheme) {
+        onSelectTheme(item.id)
+      }
       onUpdatePlayerProfile({
         ...playerProfile,
         equipped: res.equipped,

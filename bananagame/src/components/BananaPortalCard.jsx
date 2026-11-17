@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function BananaPortalCard({
   authView,
@@ -17,9 +17,79 @@ export default function BananaPortalCard({
   resetLink,
   onInputFocus,
   onInputBlur,
+  mfaData,
+  handleVerifyMfa,
+  handleResendMfa,
+  enableMfa,
+  setEnableMfa,
+  handleTestMfa,
 }) {
   const [rememberMe, setRememberMe] = useState(true)
   const [agreeRules, setAgreeRules] = useState(true)
+  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', ''])
+  const [resendCountdown, setResendCountdown] = useState(30)
+
+  useEffect(() => {
+    if (authView !== 'mfa') return undefined
+    setOtpDigits(['', '', '', '', '', ''])
+    setResendCountdown(30)
+    const timer = setInterval(() => {
+      setResendCountdown((prev) => (prev > 0 ? prev - 1 : 0))
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [authView, mfaData?.code])
+
+  const handleDigitChange = (index, value) => {
+    const val = value.slice(-1).replace(/[^0-9]/g, '')
+    const next = [...otpDigits]
+    next[index] = val
+    setOtpDigits(next)
+
+    if (val && index < 5) {
+      document.getElementById(`otp-input-${index + 1}`)?.focus()
+    }
+  }
+
+  const handleDigitKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+      document.getElementById(`otp-input-${index - 1}`)?.focus()
+    }
+  }
+
+  const handleOtpPaste = (e) => {
+    e.preventDefault()
+    const pasted = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 6)
+    if (pasted) {
+      const next = [...otpDigits]
+      for (let i = 0; i < 6; i++) {
+        next[i] = pasted[i] || ''
+      }
+      setOtpDigits(next)
+      const lastIndex = Math.min(pasted.length, 5)
+      document.getElementById(`otp-input-${lastIndex}`)?.focus()
+    }
+  }
+
+  const fillOtpCode = (code) => {
+    const digits = String(code).slice(0, 6).split('')
+    while (digits.length < 6) digits.push('')
+    setOtpDigits(digits)
+    document.getElementById('otp-input-5')?.focus()
+  }
+
+  const onMfaSubmit = (e) => {
+    e.preventDefault()
+    const entered = otpDigits.join('')
+    if (entered.length === 6 && handleVerifyMfa) {
+      handleVerifyMfa(entered)
+    }
+  }
+
+  const handleResend = () => {
+    if (resendCountdown > 0) return
+    setResendCountdown(30)
+    if (handleResendMfa) handleResendMfa()
+  }
 
   return (
     <div className="banana-portal-card">
@@ -62,7 +132,9 @@ export default function BananaPortalCard({
               ? 'Join the Jungle Tribe!'
               : authView === 'forgot'
                 ? 'Lost Your Jungle Key?'
-                : 'Craft a New Jungle Key!'}
+                : authView === 'mfa'
+                  ? '🛡️ 2-Step Verification'
+                  : 'Craft a New Jungle Key!'}
         </h2>
         <p className="welcome-subtext">
           {authView === 'login'
@@ -71,7 +143,9 @@ export default function BananaPortalCard({
               ? 'Pick your explorer name and join our cheerful jungle world!'
               : authView === 'forgot'
                 ? "Enter your email and we'll prepare your secret jungle key!"
-                : 'Choose a strong new password for your jungle account.'}
+                : authView === 'mfa'
+                  ? 'Multi-Factor Authentication: Enter the 6-digit security PIN to proceed.'
+                  : 'Choose a strong new password for your jungle account.'}
         </p>
       </div>
 
@@ -160,7 +234,7 @@ export default function BananaPortalCard({
             </div>
           </div>
 
-          {/* PROPERLY PLACED OPTIONS ROW: Checkbox on Left, Forgot Key on Right */}
+          {/* Options Row: Keep Signed In & Forgot Key */}
           <div className="portal-options-row">
             <label className="custom-remember-label" htmlFor="portal-remember-me">
               <input
@@ -186,6 +260,25 @@ export default function BananaPortalCard({
             </button>
           </div>
 
+          {/* MFA (Multi-Factor Authentication) Row */}
+          <div className="portal-options-row mfa-security-toggle-row">
+            <label className="custom-remember-label mfa-highlight-label" htmlFor="portal-enable-mfa-login">
+              <input
+                id="portal-enable-mfa-login"
+                type="checkbox"
+                checked={enableMfa}
+                onChange={(e) => setEnableMfa(e.target.checked)}
+                className="custom-checkbox-input"
+              />
+              <span className={`checkbox-visual-box ${enableMfa ? 'box-checked' : ''}`}>
+                {enableMfa && <span className="check-mark-glyph">✓</span>}
+              </span>
+              <span className="remember-text-label">
+                <strong>Require 2-Step Verification (MFA) to my Gmail 🛡️</strong>
+              </span>
+            </label>
+          </div>
+
           {/* Action Buttons */}
           <div className="portal-actions">
             <button
@@ -209,6 +302,35 @@ export default function BananaPortalCard({
               </span>
             </button>
 
+            <div className="portal-divider">
+              <span>OR</span>
+            </div>
+
+            <button
+              type="button"
+              className="btn-google"
+              onClick={handleGoogleLogin}
+            >
+              <svg className="google-icon-svg" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="#4285F4"
+                  d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.27 21.36 7.34 24 12 24z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.17 0 9.99 0 12s.46 3.83 1.26 5.42l4.02-3.15z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.27 2.64 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+                />
+              </svg>
+              <span>Continue with Google</span>
+            </button>
           </div>
 
           {/* Footer Helper */}
@@ -317,6 +439,23 @@ export default function BananaPortalCard({
             </label>
           </div>
 
+          {/* MFA Checkbox */}
+          <div className="portal-options-row">
+            <label className="custom-remember-label" htmlFor="portal-enable-mfa">
+              <input
+                id="portal-enable-mfa"
+                type="checkbox"
+                checked={enableMfa}
+                onChange={(e) => setEnableMfa(e.target.checked)}
+                className="custom-checkbox-input"
+              />
+              <span className={`checkbox-visual-box ${enableMfa ? 'box-checked' : ''}`}>
+                {enableMfa && <span className="check-mark-glyph">✓</span>}
+              </span>
+              <span className="remember-text-label">Enable 2-Step Verification (MFA) 🛡️</span>
+            </label>
+          </div>
+
           <div className="portal-actions">
             <button type="submit" className="game-button btn-primary btn-banana-primary">
               <span className="btn-shine" />
@@ -324,6 +463,36 @@ export default function BananaPortalCard({
                 <span>CREATE MY JUNGLE BADGE!</span>
                 <span className="btn-arrow">🌟</span>
               </span>
+            </button>
+
+            <div className="portal-divider">
+              <span>OR</span>
+            </div>
+
+            <button
+              type="button"
+              className="btn-google"
+              onClick={handleGoogleLogin}
+            >
+              <svg className="google-icon-svg" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="#4285F4"
+                  d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.15C3.27 21.36 7.34 24 12 24z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.26C.46 8.17 0 9.99 0 12s.46 3.83 1.26 5.42l4.02-3.15z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.27 2.64 1.26 6.58l4.02 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+                />
+              </svg>
+              <span>Sign up with Google</span>
             </button>
 
             <button
@@ -448,6 +617,81 @@ export default function BananaPortalCard({
               type="button"
               className="game-button btn-secondary"
               onClick={() => setAuthView('login')}
+            >
+              <span>Back to Sign In</span>
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* 5. MULTI-FACTOR AUTHENTICATION (MFA) VERIFICATION FORM */}
+      {authView === 'mfa' && (
+        <form className="portal-form mfa-form" onSubmit={onMfaSubmit}>
+          <div className="mfa-shield-banner">
+            <span className="mfa-shield-icon">🛡️</span>
+            <h3>2-Step Verification</h3>
+            <p>
+              We sent a 6-digit verification code to your Gmail:{' '}
+              <strong>{mfaData?.email || 'your email'}</strong>
+            </p>
+          </div>
+
+          <div className="mfa-email-instruction">
+            <span>📧 Please open your Gmail inbox (mail.google.com), find the code, and enter it below:</span>
+          </div>
+
+          {/* 6-box OTP Input */}
+          <div className="mfa-otp-inputs-row">
+            {otpDigits.map((digit, idx) => (
+              <input
+                key={idx}
+                id={`otp-input-${idx}`}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleDigitChange(idx, e.target.value)}
+                onKeyDown={(e) => handleDigitKeyDown(idx, e)}
+                onPaste={handleOtpPaste}
+                className="otp-digit-box"
+                autoFocus={idx === 0}
+              />
+            ))}
+          </div>
+
+          {/* Resend & Timer */}
+          <div className="mfa-resend-row">
+            <span>Didn't receive the security code?</span>
+            <button
+              type="button"
+              className="mfa-resend-btn"
+              onClick={handleResend}
+              disabled={resendCountdown > 0}
+            >
+              {resendCountdown > 0 ? `Resend in ${resendCountdown}s` : 'Resend Code 🔄'}
+            </button>
+          </div>
+
+          <div className="portal-actions">
+            <button
+              type="submit"
+              className="game-button btn-primary btn-banana-primary"
+              disabled={otpDigits.join('').length < 6 || loading}
+            >
+              <span className="btn-shine" />
+              <span className="btn-content">
+                <span>VERIFY & ENTER JUNGLE!</span>
+                <span className="btn-arrow">🛡️</span>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className="game-button btn-secondary"
+              onClick={() => {
+                setAuthView('login')
+              }}
             >
               <span>Back to Sign In</span>
             </button>

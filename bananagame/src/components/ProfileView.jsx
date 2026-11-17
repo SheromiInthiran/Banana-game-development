@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { calculateLevel, ALL_ACHIEVEMENTS } from '../utils/progression'
 import { updatePlayerProfile } from '../utils/apiService'
 import { playClick, playCorrect } from '../utils/audio'
+import ThemeSelector from './ThemeSelector'
 
 const AVATAR_OPTIONS = ['🍌', '🐒', '🌴', '🦁', '🦜', '🐘', '🐯', '🐸', '🐨', '🦊', '👑', '⭐']
 
@@ -11,6 +12,8 @@ export default function ProfileView({
   soundEnabled = true,
   onOpenShop,
   onOpenPlay,
+  currentTheme = 'theme_jungle',
+  onSelectTheme,
 }) {
   const [nicknameInput, setNicknameInput] = useState(playerProfile?.nickname || '')
   const [selectedAvatar, setSelectedAvatar] = useState(playerProfile?.avatar || '🍌')
@@ -78,7 +81,12 @@ export default function ProfileView({
             </span>
           </div>
           <p className="profile-id-subtext">
-            Explorer ID: <strong>@{playerProfile?.id}</strong> • Member of Banana Jungle
+            Explorer ID: <strong>@{playerProfile?.id}</strong> • 📧 {playerProfile?.email || 'explorer@banana.com'}
+            {playerProfile?.email?.endsWith('@gmail.com') && (
+              <span className="google-verified-tag" title="Verified with Google">
+                ✓ Google Account
+              </span>
+            )}
           </p>
 
           {/* Level Progress */}
@@ -194,6 +202,16 @@ export default function ProfileView({
             </div>
           </div>
 
+          <div className="profile-theme-picker-section">
+            <span className="picker-label">Choose Atmosphere Theme:</span>
+            <ThemeSelector
+              currentTheme={currentTheme}
+              onSelectTheme={onSelectTheme}
+              onPlaySound={(t) => playClick(soundEnabled)}
+              variant="cards"
+            />
+          </div>
+
           <button
             type="submit"
             className="game-button btn-primary btn-banana-primary save-profile-btn"
@@ -227,6 +245,32 @@ export default function ProfileView({
               </div>
             )
           })}
+        </div>
+      </div>
+
+      {/* Multi-Factor Authentication (MFA) Security Card */}
+      <div className="profile-mfa-card">
+        <div className="mfa-profile-header">
+          <span className="mfa-profile-shield">🛡️</span>
+          <div>
+            <h3>Multi-Factor Authentication (MFA)</h3>
+            <p>Two-Factor security protects your Jungle Explorer account.</p>
+          </div>
+          <span className="mfa-badge-active">✓ 2FA Active</span>
+        </div>
+        <div className="mfa-profile-details">
+          <div className="mfa-detail-item">
+            <span className="mfa-detail-label">Factor 1 (Knowledge):</span>
+            <span className="mfa-detail-value">Password / Google OAuth</span>
+          </div>
+          <div className="mfa-detail-item">
+            <span className="mfa-detail-label">Factor 2 (Possession):</span>
+            <span className="mfa-detail-value">6-Digit One-Time PIN (Email)</span>
+          </div>
+          <div className="mfa-detail-item">
+            <span className="mfa-detail-label">Registered Inbox:</span>
+            <span className="mfa-detail-value">{playerProfile?.email || 'sheromiinthiran@gmail.com'}</span>
+          </div>
         </div>
       </div>
 

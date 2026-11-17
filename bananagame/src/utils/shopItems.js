@@ -179,12 +179,12 @@ export const SHOP_ITEMS = [
     icon: '🏛️',
   },
   {
-    id: 'theme_night',
+    id: 'theme_ocean',
     category: 'themes',
-    name: 'Starry Night Jungle',
-    description: 'Enchanted nighttime canopy lit by glowing fireflies.',
-    cost: 750,
-    icon: '🌌',
+    name: 'Ocean Lagoon',
+    description: 'Crystal turquoise waters and breezy tropical reef tides.',
+    cost: 350,
+    icon: '🌊',
   },
 ]
 
