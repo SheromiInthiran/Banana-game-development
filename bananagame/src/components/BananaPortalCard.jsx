@@ -22,6 +22,7 @@ export default function BananaPortalCard({
   handleResendMfa,
   enableMfa,
   setEnableMfa,
+  handleTestMfa,
 }) {
   const [rememberMe, setRememberMe] = useState(true)
   const [agreeRules, setAgreeRules] = useState(true)
@@ -233,7 +234,7 @@ export default function BananaPortalCard({
             </div>
           </div>
 
-          {/* PROPERLY PLACED OPTIONS ROW: Checkbox on Left, Forgot Key on Right */}
+          {/* Options Row: Keep Signed In & Forgot Key */}
           <div className="portal-options-row">
             <label className="custom-remember-label" htmlFor="portal-remember-me">
               <input
@@ -257,6 +258,25 @@ export default function BananaPortalCard({
             >
               Forgot key? 🗝️
             </button>
+          </div>
+
+          {/* MFA (Multi-Factor Authentication) Row */}
+          <div className="portal-options-row mfa-security-toggle-row">
+            <label className="custom-remember-label mfa-highlight-label" htmlFor="portal-enable-mfa-login">
+              <input
+                id="portal-enable-mfa-login"
+                type="checkbox"
+                checked={enableMfa}
+                onChange={(e) => setEnableMfa(e.target.checked)}
+                className="custom-checkbox-input"
+              />
+              <span className={`checkbox-visual-box ${enableMfa ? 'box-checked' : ''}`}>
+                {enableMfa && <span className="check-mark-glyph">✓</span>}
+              </span>
+              <span className="remember-text-label">
+                <strong>Require 2-Step Verification (MFA) to my Gmail 🛡️</strong>
+              </span>
+            </label>
           </div>
 
           {/* Action Buttons */}
@@ -611,26 +631,14 @@ export default function BananaPortalCard({
             <span className="mfa-shield-icon">🛡️</span>
             <h3>2-Step Verification</h3>
             <p>
-              To protect your jungle account, enter the 6-digit security code sent to{' '}
+              We sent a 6-digit verification code to your Gmail:{' '}
               <strong>{mfaData?.email || 'your email'}</strong>
             </p>
           </div>
 
-          {/* Active Demo Code Helper */}
-          {mfaData?.code && (
-            <div className="mfa-demo-code-tip">
-              <span>📧 Security PIN sent: </span>
-              <strong>{mfaData.code}</strong>
-              <button
-                type="button"
-                className="mfa-autofill-btn"
-                onClick={() => fillOtpCode(mfaData.code)}
-                title="Automatically fill in this test code"
-              >
-                Auto-fill ⚡
-              </button>
-            </div>
-          )}
+          <div className="mfa-email-instruction">
+            <span>📧 Please open your Gmail inbox (mail.google.com), find the code, and enter it below:</span>
+          </div>
 
           {/* 6-box OTP Input */}
           <div className="mfa-otp-inputs-row">

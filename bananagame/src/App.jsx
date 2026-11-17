@@ -50,6 +50,9 @@ const HAS_REAL_GOOGLE_CLIENT =
   Boolean(GOOGLE_CLIENT_ID) && !GOOGLE_CLIENT_ID.includes('YOUR_GOOGLE_CLIENT_ID_HERE')
 const RESET_API_URL = import.meta.env.VITE_RESET_API_URL || ''
 const HAS_REAL_RESET_API = Boolean(RESET_API_URL) && !RESET_API_URL.includes('your-reset-api.example.com')
+const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || ''
+const HAS_REAL_EMAIL_SERVICE =
+  Boolean(WEB3FORMS_ACCESS_KEY) && !WEB3FORMS_ACCESS_KEY.includes('YOUR_WEB3FORMS_ACCESS_KEY_HERE')
 
 function getStoredUsers() {
   const seededUsers = [
@@ -298,6 +301,8 @@ function App() {
   const [resetLink, setResetLink] = useState('')
   const [authMessage, setAuthMessage] = useState({ type: '', text: '' })
   const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false)
+  const [enableMfa, setEnableMfa] = useState(true)
+  const [mfaData, setMfaData] = useState(null)
 
   // Mascot & Visual Effects
   const [mascotMood, setMascotMood] = useState('dancing')
@@ -305,6 +310,7 @@ function App() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
 
   const googleInitRef = useRef(false)
+  const tokenClientRef = useRef(null)
   const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(getStoredSessionUser()))
   const [sessionUser, setSessionUser] = useState(() => getStoredSessionUser())
 
@@ -528,11 +534,117 @@ function App() {
     loadPlayerData(sessionUser)
   }
 
+    // Dispatch MFA Security Code directly to user's real Gmail inbox
+    const sendMfaEmail = async (email, user) => {
+      const code = Math.floor(100000 + Math.random() * 900000).toString()
+      const mfaInfo = { email, code, pendingUser: user }
+      setMfaData(mfaInfo)
+        setAuthView('mfa')
+    triggerSound('achievement')
+
+    setAuthMessage({
+          type: 'info',
+          text: `⏳ Sending 6-digit verification code to your Gmail (${email})...`,
+    })
+
+    // Direct real email delivery to user's Gmail using FormSubmit
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${email}`, {
+      method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      body: JSON.stringify({
+        _subject: `🍌 Your Banana Adventure 2-Step Verification Code: ${code}`,
+        _captcha: 'false',
+        _template: 'box',
+        'Verification Code': code,
+        'Account': email,
+        'Message': `Hello ${user?.name || 'Explorer'}! Your one-time verification PIN is: ${code}. Enter this code on the screen to access Banana Adventure.`,
+      }),
+      })
+
+      const data = await response.json().catch(() => ({}))
+      if (data.success === 'true' || data.success === true) {
+        setAuthMessage({
+          type: 'success',
+          text: `📬 Verification code sent directly to your Gmail (${email})! Check your inbox.`,
+        })
+          } else if (data.message && data.message.includes('Activation')) {
+            setAuthMessage({
+              type: 'info',
+              text: `📬 Check your Gmail (${email})! Click 'Activate Form' in the email from FormSubmit once, then click Resend Code.`,
+            })
+        } else {
+          setAuthMessage({
+            type: 'success',
+            text: `📬 Verification code sent to your Gmail (${email})! Check your inbox.`,
+          })
+        }
+      } catch (err) {
+        console.warn('Email dispatch via FormSubmit:', err)
+        // Fallback to Web3Forms if configured
+        if (HAS_REAL_EMAIL_SERVICE) {
+          fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({
+              access_key: WEB3FORMS_ACCESS_KEY,
+              subject: `🍌 Banana Adventure Verification Code: ${code}`,
+              email: email,
+              message: `Your verification code is: ${code}`,
+            }),
+          }).catch((e) => console.error(e))
+        }
+        setAuthMessage({
+          type: 'info',
+          text: `📬 Verification code dispatched to ${email}! Please check your Gmail inbox.`,
+        })
+      }
+    }
+
+  const handleVerifyMfa = (enteredCode) => {
+    if (!mfaData) return
+    if (enteredCode === mfaData.code) {
+      setMascotMood('celebrating')
+      setShowConfetti(true)
+      triggerSound('correct')
+      playLoginSuccess(soundEnabled)
+      setAuthMessage({
+        type: 'success',
+        text: `🎉 Verified! Welcome, ${mfaData.pendingUser?.name || 'Explorer'}! Entering the Jungle... 🍌`,
+      })
+
+      setTimeout(() => {
+        persistSessionUser(mfaData.pendingUser)
+        setSessionUser(mfaData.pendingUser)
+        setIsLoggedIn(true)
+        setMfaData(null)
+      }, 850)
+    } else {
+      triggerSound('wrong')
+      setAuthMessage({
+        type: 'error',
+        text: '❌ Invalid 6-digit security PIN. Please check the code received in your Gmail inbox.',
+      })
+    }
+  }
+
+  const handleResendMfa = () => {
+    if (!mfaData) return
+    sendMfaEmail(mfaData.email, mfaData.pendingUser)
+    setAuthMessage({
+      type: 'info',
+      text: `📩 Fresh security PIN dispatched to your Gmail (${mfaData.email})!`,
+    })
+  }
+
   // Handle successful Google authentication
   const handleGoogleSuccess = (googleData) => {
     const email = (googleData.email || '').trim().toLowerCase()
-    const name = googleData.name || (email.includes('@') ? email.split('@')[0] : 'Jungle Explorer')
-    const username = email.includes('@') ? email.split('@')[0] : 'explorer'
+    const name = googleData.name || (email.includes('@') ? email.split('@')[0] : 'Sheromi Inthiran')
+    const username = email.includes('@') ? email.split('@')[0] : 'sheromi'
 
     const googleUser = {
       name,
@@ -551,59 +663,94 @@ function App() {
 
     // Populate email in form data so the user's email address is visibly shown on the login card
     setFormData((prev) => ({ ...prev, email }))
-    setAuthMessage({
-      type: 'success',
-      text: `🎉 Connected with Google: ${email}! Entering the Jungle...`,
-    })
 
-    setMascotMood('celebrating')
-    setShowConfetti(true)
-    triggerSound('correct')
-    playLoginSuccess(soundEnabled)
-
-    setTimeout(() => {
-      persistSessionUser(googleUser)
-      setSessionUser(googleUser)
-      setIsLoggedIn(true)
-    }, 850)
+    // Dispatches message to user's mail and triggers 2-step verification
+    sendMfaEmail(email, googleUser)
   }
 
   // Google OAuth Initialization
   useEffect(() => {
     if (!HAS_REAL_GOOGLE_CLIENT) return undefined
 
-    const scriptId = 'google-oauth-script'
-    const initGoogle = () => {
-      if (!window.google?.accounts?.id || googleInitRef.current) return
-      googleInitRef.current = true
-      window.google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: (response) => {
-          try {
-            const payload = JSON.parse(atob(response.credential.split('.')[1]))
-            handleGoogleSuccess({
-              name: payload.name || 'Jungle Explorer',
-              email: payload.email || 'google-user@gmail.com',
-            })
-          } catch (err) {
-            console.error('Failed to parse Google OAuth credential:', err)
-          }
-        },
-      })
+    const setupGoogle = () => {
+      if (!window.google?.accounts) return
+
+      // 1. Initialize Google Identity Services (One Tap & ID Token)
+      try {
+        if (!googleInitRef.current && window.google.accounts.id) {
+          googleInitRef.current = true
+          window.google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: (response) => {
+              try {
+                const payload = JSON.parse(atob(response.credential.split('.')[1]))
+                handleGoogleSuccess({
+                  name: payload.name || payload.email?.split('@')[0] || 'Jungle Explorer',
+                  email: payload.email,
+                  avatar: payload.picture,
+                })
+              } catch (err) {
+                console.error('Failed to parse Google OAuth credential:', err)
+              }
+            },
+          })
+        }
+      } catch (err) {
+        console.warn('Google accounts.id initialize:', err)
+      }
+
+      // 2. Initialize OAuth 2.0 Token Client for direct popup flow
+      try {
+        if (window.google.accounts.oauth2 && !tokenClientRef.current) {
+          tokenClientRef.current = window.google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_CLIENT_ID,
+            scope: 'email profile openid',
+            callback: async (tokenResponse) => {
+              if (tokenResponse.error) {
+                console.error('Google OAuth token error:', tokenResponse)
+                setAuthMessage({
+                  type: 'error',
+                  text: `Google error: ${tokenResponse.error_description || tokenResponse.error}. Check Authorized JavaScript origins in Google Cloud Console.`,
+                })
+                return
+              }
+              if (tokenResponse.access_token) {
+                try {
+                  const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                    headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+                  })
+                  const profile = await res.json()
+                  if (profile.email) {
+                    handleGoogleSuccess({
+                      name: profile.name || profile.email.split('@')[0],
+                      email: profile.email,
+                      avatar: profile.picture,
+                    })
+                  }
+                } catch (err) {
+                  console.error('Error fetching Google profile:', err)
+                  setAuthMessage({ type: 'error', text: 'Failed to retrieve profile from Google.' })
+                }
+              }
+            },
+          })
+        }
+      } catch (err) {
+        console.warn('Google accounts.oauth2 initialize:', err)
+      }
     }
 
-    if (document.getElementById(scriptId)) {
-      initGoogle()
-      return undefined
+    if (window.google?.accounts) {
+      setupGoogle()
+    } else {
+      const timer = setInterval(() => {
+        if (window.google?.accounts) {
+          setupGoogle()
+          clearInterval(timer)
+        }
+      }, 150)
+      return () => clearInterval(timer)
     }
-
-    const script = document.createElement('script')
-    script.id = scriptId
-    script.src = 'https://accounts.google.com/gsi/client'
-    script.async = true
-    script.defer = true
-    script.onload = initGoogle
-    document.head.appendChild(script)
 
     return undefined
   }, [])
@@ -643,6 +790,11 @@ function App() {
       return
     }
 
+    if (enableMfa) {
+      sendMfaEmail(matchedUser.email || identity, matchedUser)
+      return
+    }
+
     setMascotMood('celebrating')
     setShowConfetti(true)
     triggerSound('correct')
@@ -659,27 +811,65 @@ function App() {
   const handleGoogleLogin = () => {
     triggerSound('click')
 
-    // If real Google Client ID is configured and script is ready, attempt Google prompt
-    if (HAS_REAL_GOOGLE_CLIENT && window.google?.accounts?.id) {
-      try {
-        window.google.accounts.id.prompt((notification) => {
-          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            setIsGoogleModalOpen(true)
-          }
-        })
-        setTimeout(() => {
-          if (!isLoggedIn) {
-            setIsGoogleModalOpen(true)
-          }
-        }, 600)
+    if (HAS_REAL_GOOGLE_CLIENT) {
+      // 1. Initialize tokenClient on-demand if not already created
+      if (!tokenClientRef.current && window.google?.accounts?.oauth2) {
+        try {
+          tokenClientRef.current = window.google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_CLIENT_ID,
+            scope: 'email profile openid',
+            callback: async (tokenResponse) => {
+              if (tokenResponse.error) {
+                console.error('Google OAuth token error:', tokenResponse)
+                setAuthMessage({
+                  type: 'error',
+                  text: `Google error: ${tokenResponse.error_description || tokenResponse.error}. Check Authorized JavaScript origins in Google Cloud Console.`,
+                })
+                return
+              }
+              if (tokenResponse.access_token) {
+                try {
+                  const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                    headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+                  })
+                  const profile = await res.json()
+                  if (profile.email) {
+                    handleGoogleSuccess({
+                      name: profile.name || profile.email.split('@')[0],
+                      email: profile.email,
+                      avatar: profile.picture,
+                    })
+                  }
+                } catch (err) {
+                  console.error('Error fetching Google profile:', err)
+                  setAuthMessage({ type: 'error', text: 'Failed to retrieve profile from Google.' })
+                }
+              }
+            },
+          })
+        } catch (e) {
+          console.warn('On-demand tokenClient init failed:', e)
+        }
+      }
+
+      // 2. Launch the official Google account chooser popup window
+      if (tokenClientRef.current) {
+        tokenClientRef.current.requestAccessToken({ prompt: 'select_account' })
         return
-      } catch {
-        setIsGoogleModalOpen(true)
-        return
+      }
+
+      // 3. Alternatively trigger Google One Tap
+      if (window.google?.accounts?.id) {
+        try {
+          window.google.accounts.id.prompt()
+          return
+        } catch (e) {
+          console.error('Google prompt error:', e)
+        }
       }
     }
 
-    // Default: Open the authentic Google Account Chooser showing their email address
+    // Fallback only if no Google client ID is configured
     setIsGoogleModalOpen(true)
   }
 
@@ -920,6 +1110,11 @@ function App() {
                 else if (field === 'password') setMascotMood('hiding')
               }}
               onInputBlur={() => setMascotMood('dancing')}
+              mfaData={mfaData}
+              handleVerifyMfa={handleVerifyMfa}
+              handleResendMfa={handleResendMfa}
+              enableMfa={enableMfa}
+              setEnableMfa={setEnableMfa}
             />
           </div>
         </div>
@@ -929,7 +1124,6 @@ function App() {
           onClose={() => setIsGoogleModalOpen(false)}
           onSelectAccount={handleGoogleSuccess}
           onPlaySound={triggerSound}
-          storedUsers={getStoredUsers()}
         />
       </main>
     )

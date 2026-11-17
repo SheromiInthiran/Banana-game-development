@@ -1,63 +1,24 @@
-import { useState } from 'react'
-
 export default function GoogleAuthModal({
   isOpen,
   onClose,
   onSelectAccount,
   onPlaySound,
-  storedUsers = [],
 }) {
-  const [customEmail, setCustomEmail] = useState('')
-  const [customName, setCustomName] = useState('')
-  const [showCustomInput, setShowCustomInput] = useState(false)
-  const [errorMsg, setErrorMsg] = useState('')
-
   if (!isOpen) return null
 
-  // Ensure Sheromi's email is prominently featured as the Google account
-  const accountsToShow = [
-    {
-      name: 'Sheromi Inthiran',
-      email: 'sheromiinthiran@gmail.com',
-      avatarColor: '#EA4335',
-      letter: 'S',
-    },
-    ...storedUsers
-      .filter((u) => u.email && u.email.toLowerCase() !== 'sheromiinthiran@gmail.com')
-      .map((u) => ({
-        name: u.name || u.username || 'Explorer',
-        email: u.email,
-        avatarColor: '#4285F4',
-        letter: (u.name || u.email || 'G').charAt(0).toUpperCase(),
-      })),
-  ]
-
-  // Filter unique accounts by email
-  const uniqueAccounts = accountsToShow.filter(
-    (acc, index, self) => index === self.findIndex((a) => a.email.toLowerCase() === acc.email.toLowerCase()),
-  )
-
-  const handleAccountClick = (account) => {
-    if (onPlaySound) onPlaySound('click')
-    onSelectAccount({
-      name: account.name,
-      email: account.email,
-    })
-    onClose()
+  // Display only the user's Google account as requested
+  const userAccount = {
+    name: 'Sheromi Inthiran',
+    email: 'sheromiinthiran@gmail.com',
+    avatarColor: '#EA4335',
+    letter: 'S',
   }
 
-  const handleCustomSubmit = (e) => {
-    e.preventDefault()
-    const trimmedEmail = customEmail.trim().toLowerCase()
-    if (!trimmedEmail || !trimmedEmail.includes('@') || !trimmedEmail.includes('.')) {
-      setErrorMsg('Please enter a valid Google email address (e.g. name@gmail.com)')
-      return
-    }
-    const name = customName.trim() || trimmedEmail.split('@')[0]
+  const handleAccountClick = () => {
     if (onPlaySound) onPlaySound('click')
     onSelectAccount({
-      name,
-      email: trimmedEmail,
+      name: userAccount.name,
+      email: userAccount.email,
     })
     onClose()
   }
@@ -104,93 +65,25 @@ export default function GoogleAuthModal({
           </p>
         </div>
 
-        {/* Account List */}
+        {/* Account List - Displays strictly the user's Gmail account */}
         <div className="google-accounts-list">
-          {uniqueAccounts.map((account) => (
-            <button
-              key={account.email}
-              type="button"
-              className="google-account-item"
-              onClick={() => handleAccountClick(account)}
+          <button
+            type="button"
+            className="google-account-item single-google-account"
+            onClick={handleAccountClick}
+          >
+            <div
+              className="google-account-avatar"
+              style={{ backgroundColor: userAccount.avatarColor }}
             >
-              <div
-                className="google-account-avatar"
-                style={{ backgroundColor: account.avatarColor || '#4285F4' }}
-              >
-                {account.letter}
-              </div>
-              <div className="google-account-info">
-                <span className="google-account-name">{account.name}</span>
-                <span className="google-account-email">{account.email}</span>
-              </div>
-              <span className="google-account-arrow">➔</span>
-            </button>
-          ))}
-
-          {/* Use another account option */}
-          {!showCustomInput ? (
-            <button
-              type="button"
-              className="google-account-item google-use-another-btn"
-              onClick={() => {
-                if (onPlaySound) onPlaySound('click')
-                setShowCustomInput(true)
-              }}
-            >
-              <div className="google-account-avatar add-account-avatar">
-                +
-              </div>
-              <div className="google-account-info">
-                <span className="google-account-name">Use another Google account</span>
-                <span className="google-account-email">Enter any Google email address</span>
-              </div>
-            </button>
-          ) : (
-            <form onSubmit={handleCustomSubmit} className="google-custom-account-form">
-              <div className="google-input-group">
-                <label htmlFor="google-custom-email">Google Email Address:</label>
-                <input
-                  id="google-custom-email"
-                  type="email"
-                  value={customEmail}
-                  onChange={(e) => {
-                    setCustomEmail(e.target.value)
-                    setErrorMsg('')
-                  }}
-                  placeholder="e.g. yourname@gmail.com"
-                  autoFocus
-                  className="google-text-input"
-                />
-              </div>
-
-              <div className="google-input-group">
-                <label htmlFor="google-custom-name">Display Name (optional):</label>
-                <input
-                  id="google-custom-name"
-                  type="text"
-                  value={customName}
-                  onChange={(e) => setCustomName(e.target.value)}
-                  placeholder="e.g. Jungle Hero"
-                  className="google-text-input"
-                />
-              </div>
-
-              {errorMsg && <p className="google-form-error">{errorMsg}</p>}
-
-              <div className="google-form-actions">
-                <button type="submit" className="google-submit-btn">
-                  Continue with this Email
-                </button>
-                <button
-                  type="button"
-                  className="google-cancel-btn"
-                  onClick={() => setShowCustomInput(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          )}
+              {userAccount.letter}
+            </div>
+            <div className="google-account-info">
+              <span className="google-account-name">{userAccount.name}</span>
+              <span className="google-account-email">{userAccount.email}</span>
+            </div>
+            <span className="google-account-arrow">➔</span>
+          </button>
         </div>
 
         {/* Security Footer */}
@@ -198,10 +91,9 @@ export default function GoogleAuthModal({
           <svg width="14" height="14" viewBox="0 0 24 24" fill="#5f6368" aria-hidden="true">
             <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
           </svg>
-          <span>To continue, Google will share your name, email address, and language preference with Banana Adventure.</span>
+          <span>To continue, Google will securely sign you in with <strong>{userAccount.email}</strong> and verify your account.</span>
         </div>
       </div>
     </div>
   )
 }
-

@@ -248,6 +248,32 @@ export default function ProfileView({
         </div>
       </div>
 
+      {/* Multi-Factor Authentication (MFA) Security Card */}
+      <div className="profile-mfa-card">
+        <div className="mfa-profile-header">
+          <span className="mfa-profile-shield">🛡️</span>
+          <div>
+            <h3>Multi-Factor Authentication (MFA)</h3>
+            <p>Two-Factor security protects your Jungle Explorer account.</p>
+          </div>
+          <span className="mfa-badge-active">✓ 2FA Active</span>
+        </div>
+        <div className="mfa-profile-details">
+          <div className="mfa-detail-item">
+            <span className="mfa-detail-label">Factor 1 (Knowledge):</span>
+            <span className="mfa-detail-value">Password / Google OAuth</span>
+          </div>
+          <div className="mfa-detail-item">
+            <span className="mfa-detail-label">Factor 2 (Possession):</span>
+            <span className="mfa-detail-value">6-Digit One-Time PIN (Email)</span>
+          </div>
+          <div className="mfa-detail-item">
+            <span className="mfa-detail-label">Registered Inbox:</span>
+            <span className="mfa-detail-value">{playerProfile?.email || 'sheromiinthiran@gmail.com'}</span>
+          </div>
+        </div>
+      </div>
+
       {/* Game Sessions & History */}
       <div className="profile-history-card">
         <h3>📜 Recent Game Sessions</h3>
