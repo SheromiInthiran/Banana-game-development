@@ -228,6 +228,41 @@
         "themes": "theme_jungle"
       },
       "createdAt": "2026-11-06T05:44:04.439Z"
+    },
+    "sheromiinthiran": {
+      "id": "sheromiinthiran",
+      "nickname": "Sheromi Inthiran",
+      "avatar": "🍌",
+      "email": "sheromiinthiran@gmail.com",
+      "totalPoints": 0,
+      "xp": 0,
+      "level": 1,
+      "levelName": "Banana Beginner",
+      "completedGames": 0,
+      "correctAnswers": 0,
+      "streak": 0,
+      "highestStreak": 0,
+      "bestScore": 0,
+      "achievements": [],
+      "dailyChallenge": {
+        "lastCompletedDate": "",
+        "streak": 0
+      },
+      "history": [],
+      "sessions": [],
+      "inventory": [
+        "char_benny",
+        "hat_none",
+        "glass_none",
+        "theme_jungle"
+      ],
+      "equipped": {
+        "characters": "char_benny",
+        "hats": "hat_none",
+        "glasses": "glass_none",
+        "themes": "theme_jungle"
+      },
+      "createdAt": "2026-11-16T05:53:48.070Z"
     }
   },
   "processedSubmissions": {

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { calculateLevel, ALL_ACHIEVEMENTS } from '../utils/progression'
 import { updatePlayerProfile } from '../utils/apiService'
 import { playClick, playCorrect } from '../utils/audio'
+import ThemeSelector from './ThemeSelector'
 
 const AVATAR_OPTIONS = ['🍌', '🐒', '🌴', '🦁', '🦜', '🐘', '🐯', '🐸', '🐨', '🦊', '👑', '⭐']
 
@@ -11,6 +12,8 @@ export default function ProfileView({
   soundEnabled = true,
   onOpenShop,
   onOpenPlay,
+  currentTheme = 'theme_jungle',
+  onSelectTheme,
 }) {
   const [nicknameInput, setNicknameInput] = useState(playerProfile?.nickname || '')
   const [selectedAvatar, setSelectedAvatar] = useState(playerProfile?.avatar || '🍌')
@@ -78,7 +81,12 @@ export default function ProfileView({
             </span>
           </div>
           <p className="profile-id-subtext">
-            Explorer ID: <strong>@{playerProfile?.id}</strong> • Member of Banana Jungle
+            Explorer ID: <strong>@{playerProfile?.id}</strong> • 📧 {playerProfile?.email || 'explorer@banana.com'}
+            {playerProfile?.email?.endsWith('@gmail.com') && (
+              <span className="google-verified-tag" title="Verified with Google">
+                ✓ Google Account
+              </span>
+            )}
           </p>
 
           {/* Level Progress */}
@@ -192,6 +200,16 @@ export default function ProfileView({
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="profile-theme-picker-section">
+            <span className="picker-label">Choose Atmosphere Theme:</span>
+            <ThemeSelector
+              currentTheme={currentTheme}
+              onSelectTheme={onSelectTheme}
+              onPlaySound={(t) => playClick(soundEnabled)}
+              variant="cards"
+            />
           </div>
 
           <button

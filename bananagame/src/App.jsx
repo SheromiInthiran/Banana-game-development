@@ -13,6 +13,8 @@ import ProfileView from './components/ProfileView'
 import DailyChallengeModal from './components/DailyChallengeModal'
 import LevelUpModal from './components/LevelUpModal'
 import LoginMusicControl from './components/LoginMusicControl'
+import GoogleAuthModal from './components/GoogleAuthModal'
+import ThemeSelector from './components/ThemeSelector'
 import {
   getPlayerProfile,
   updatePlayerProfile,
@@ -23,6 +25,7 @@ import {
   syncPlayer,
   fetchGameQuestion,
   completeGameSession,
+  equipShopItem,
 } from './utils/apiService'
 import {
   playClick,
@@ -43,6 +46,8 @@ const USERS_STORAGE_KEY = 'banana_users'
 const SESSION_STORAGE_KEY = 'banana_session'
 const RESET_TOKENS_KEY = 'banana_reset_tokens'
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+const HAS_REAL_GOOGLE_CLIENT =
+  Boolean(GOOGLE_CLIENT_ID) && !GOOGLE_CLIENT_ID.includes('YOUR_GOOGLE_CLIENT_ID_HERE')
 const RESET_API_URL = import.meta.env.VITE_RESET_API_URL || ''
 const HAS_REAL_RESET_API = Boolean(RESET_API_URL) && !RESET_API_URL.includes('your-reset-api.example.com')
 
@@ -250,6 +255,15 @@ function App() {
       return false
     }
   })
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    try {
+      const saved = localStorage.getItem('banana_color_theme')
+      if (!saved || saved === 'theme_night') return 'theme_jungle'
+      return saved
+    } catch {
+      return 'theme_jungle'
+    }
+  })
 
   // Gameplay State
   const [selectedDifficulty, setSelectedDifficulty] = useState('easy') // 'easy' | 'medium' | 'hard'
@@ -283,6 +297,7 @@ function App() {
   const [showPassword, setShowPassword] = useState(false)
   const [resetLink, setResetLink] = useState('')
   const [authMessage, setAuthMessage] = useState({ type: '', text: '' })
+  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false)
 
   // Mascot & Visual Effects
   const [mascotMood, setMascotMood] = useState('dancing')
@@ -319,6 +334,40 @@ function App() {
     // Load daily status
     const dStatus = await getDailyChallengeStatus(playerId)
     setDailyStatus(dStatus)
+
+    // Sync equipped theme
+    if (profile?.equipped?.themes) {
+      const activeTheme = profile.equipped.themes === 'theme_night' ? 'theme_jungle' : profile.equipped.themes
+      setCurrentTheme(activeTheme)
+      localStorage.setItem('banana_color_theme', activeTheme)
+    }
+  }
+
+  // Handle color theme switch
+  const handleThemeChange = async (themeId) => {
+    triggerSound('click')
+    setCurrentTheme(themeId)
+    localStorage.setItem('banana_color_theme', themeId)
+
+    if (sessionUser && playerProfile) {
+      const playerId = sessionUser.username || sessionUser.email?.split('@')[0] || 'explorer'
+      try {
+        await equipShopItem({
+          playerId,
+          category: 'themes',
+          itemId: themeId,
+        })
+        setPlayerProfile((prev) => (prev ? {
+          ...prev,
+          equipped: {
+            ...prev.equipped,
+            themes: themeId,
+          },
+        } : prev))
+      } catch {
+        // fallback ignored
+      }
+    }
   }
 
   useEffect(() => {
@@ -479,9 +528,49 @@ function App() {
     loadPlayerData(sessionUser)
   }
 
+  // Handle successful Google authentication
+  const handleGoogleSuccess = (googleData) => {
+    const email = (googleData.email || '').trim().toLowerCase()
+    const name = googleData.name || (email.includes('@') ? email.split('@')[0] : 'Jungle Explorer')
+    const username = email.includes('@') ? email.split('@')[0] : 'explorer'
+
+    const googleUser = {
+      name,
+      email,
+      username,
+      password: 'GoogleOAuth2User',
+      provider: 'google',
+      avatar: '🍌',
+    }
+
+    const allUsers = getStoredUsers()
+    const exists = allUsers.some((u) => u.email?.toLowerCase() === email)
+    if (!exists) {
+      saveUsers([googleUser, ...allUsers])
+    }
+
+    // Populate email in form data so the user's email address is visibly shown on the login card
+    setFormData((prev) => ({ ...prev, email }))
+    setAuthMessage({
+      type: 'success',
+      text: `🎉 Connected with Google: ${email}! Entering the Jungle...`,
+    })
+
+    setMascotMood('celebrating')
+    setShowConfetti(true)
+    triggerSound('correct')
+    playLoginSuccess(soundEnabled)
+
+    setTimeout(() => {
+      persistSessionUser(googleUser)
+      setSessionUser(googleUser)
+      setIsLoggedIn(true)
+    }, 850)
+  }
+
   // Google OAuth Initialization
   useEffect(() => {
-    if (!GOOGLE_CLIENT_ID) return undefined
+    if (!HAS_REAL_GOOGLE_CLIENT) return undefined
 
     const scriptId = 'google-oauth-script'
     const initGoogle = () => {
@@ -490,27 +579,15 @@ function App() {
       window.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: (response) => {
-          const payload = JSON.parse(atob(response.credential.split('.')[1]))
-          const googleUser = {
-            name: payload.name || 'Jungle Explorer',
-            email: payload.email || 'google-user@banana.com',
-            password: 'Google123',
+          try {
+            const payload = JSON.parse(atob(response.credential.split('.')[1]))
+            handleGoogleSuccess({
+              name: payload.name || 'Jungle Explorer',
+              email: payload.email || 'google-user@gmail.com',
+            })
+          } catch (err) {
+            console.error('Failed to parse Google OAuth credential:', err)
           }
-
-          const allUsers = getStoredUsers()
-          const exists = allUsers.some((user) => user.email.toLowerCase() === googleUser.email.toLowerCase())
-          if (!exists) {
-            saveUsers([googleUser, ...allUsers])
-          }
-
-          setMascotMood('celebrating')
-          setShowConfetti(true)
-          persistSessionUser(googleUser)
-          setSessionUser(googleUser)
-          setTimeout(() => {
-            setIsLoggedIn(true)
-            setAuthMessage({ type: 'success', text: `Welcome to the jungle, ${googleUser.name}!` })
-          }, 800)
         },
       })
     }
@@ -580,22 +657,30 @@ function App() {
   }
 
   const handleGoogleLogin = () => {
-    if (!GOOGLE_CLIENT_ID) {
-      setAuthMessage({
-        type: 'error',
-        text: 'Google OAuth is not configured yet. Add your Google Client ID to .env.local as VITE_GOOGLE_CLIENT_ID.',
-      })
-      triggerSound('wrong')
-      return
+    triggerSound('click')
+
+    // If real Google Client ID is configured and script is ready, attempt Google prompt
+    if (HAS_REAL_GOOGLE_CLIENT && window.google?.accounts?.id) {
+      try {
+        window.google.accounts.id.prompt((notification) => {
+          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            setIsGoogleModalOpen(true)
+          }
+        })
+        setTimeout(() => {
+          if (!isLoggedIn) {
+            setIsGoogleModalOpen(true)
+          }
+        }, 600)
+        return
+      } catch {
+        setIsGoogleModalOpen(true)
+        return
+      }
     }
 
-    if (window.google?.accounts?.id) {
-      window.google.accounts.id.prompt()
-      return
-    }
-
-    setAuthMessage({ type: 'error', text: 'Google authentication is still loading. Please try again in a moment.' })
-    triggerSound('wrong')
+    // Default: Open the authentic Google Account Chooser showing their email address
+    setIsGoogleModalOpen(true)
   }
 
   const handleSignUp = (event) => {
@@ -785,7 +870,7 @@ function App() {
   if (!isLoggedIn) {
     return (
       <main
-        className={`banana-game-shell ${reducedMotion ? 'reduced-motion-active' : ''}`}
+        className={`banana-game-shell ${currentTheme} ${reducedMotion ? 'reduced-motion-active' : ''}`}
         onMouseMove={(event) => {
           const x = (event.clientX / window.innerWidth - 0.5) * 2
           const y = (event.clientY / window.innerHeight - 0.5) * 2
@@ -795,6 +880,13 @@ function App() {
         <JungleWorld mousePos={mousePos} />
         <ConfettiEffect active={showConfetti} />
         <LoginMusicControl />
+        <div className="login-theme-picker-corner">
+          <ThemeSelector
+            currentTheme={currentTheme}
+            onSelectTheme={handleThemeChange}
+            onPlaySound={triggerSound}
+          />
+        </div>
 
         <div className="banana-game-stage">
           <div className="stage-mascot-col">
@@ -831,6 +923,14 @@ function App() {
             />
           </div>
         </div>
+
+        <GoogleAuthModal
+          isOpen={isGoogleModalOpen}
+          onClose={() => setIsGoogleModalOpen(false)}
+          onSelectAccount={handleGoogleSuccess}
+          onPlaySound={triggerSound}
+          storedUsers={getStoredUsers()}
+        />
       </main>
     )
   }
@@ -839,7 +939,7 @@ function App() {
   const playerId = sessionUser?.username || sessionUser?.email?.split('@')[0] || 'explorer'
 
   return (
-    <main className={`banana-platform-shell ${reducedMotion ? 'reduced-motion-active' : ''}`}>
+    <main className={`banana-platform-shell ${currentTheme} ${reducedMotion ? 'reduced-motion-active' : ''}`}>
       <ConfettiEffect active={showConfetti} />
 
       {/* Main Top Jungle Nav Bar */}
@@ -918,6 +1018,11 @@ function App() {
 
         {/* User Stats & Logout */}
         <div className="nav-user-actions">
+          <ThemeSelector
+            currentTheme={currentTheme}
+            onSelectTheme={handleThemeChange}
+            onPlaySound={triggerSound}
+          />
           <div className="nav-user-chip" onClick={() => setActiveTab('profile')} style={{ cursor: 'pointer' }} title="View Profile">
             <span className="user-avatar-tag">{playerProfile?.avatar || '🍌'}</span>
             <div className="user-text-tag">
@@ -955,6 +1060,8 @@ function App() {
             setReducedMotion={setReducedMotion}
             onPlaySound={triggerSound}
             leaderboardPreview={leaderboardPreview}
+            currentTheme={currentTheme}
+            onSelectTheme={handleThemeChange}
           />
         )}
 
@@ -1010,6 +1117,7 @@ function App() {
             playerProfile={playerProfile}
             onUpdatePlayerProfile={setPlayerProfile}
             soundEnabled={soundEnabled}
+            onSelectTheme={handleThemeChange}
           />
         )}
 
@@ -1020,6 +1128,8 @@ function App() {
             soundEnabled={soundEnabled}
             onOpenPlay={() => setIsPlayIntroOpen(true)}
             onOpenShop={() => setActiveTab('shop')}
+            currentTheme={currentTheme}
+            onSelectTheme={handleThemeChange}
           />
         )}
       </div>

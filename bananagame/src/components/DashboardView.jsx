@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { calculateLevel } from '../utils/progression'
+import ThemeSelector from './ThemeSelector'
 
 const AVATAR_OPTIONS = ['🍌', '🐒', '🌴', '🐯', '🦁', '🐘', '🦜', '👑', '🐨', '🦊', '⭐', '✨']
 
@@ -16,6 +17,8 @@ export default function DashboardView({
   setReducedMotion,
   onPlaySound,
   leaderboardPreview = [],
+  currentTheme = 'theme_jungle',
+  onSelectTheme,
 }) {
   const [editingNickname, setEditingNickname] = useState(false)
   const [nicknameInput, setNicknameInput] = useState(playerProfile?.nickname || 'Jungle Explorer')
@@ -429,6 +432,20 @@ export default function DashboardView({
                   className="toggle-switch-input"
                 />
               </label>
+
+              {/* Atmosphere Theme Selector */}
+              <div className="setting-theme-block">
+                <div className="setting-text">
+                  <strong>🎨 Atmosphere Color Theme</strong>
+                  <small>Switch your visual adventure environment anytime</small>
+                </div>
+                <ThemeSelector
+                  currentTheme={currentTheme}
+                  onSelectTheme={onSelectTheme}
+                  onPlaySound={onPlaySound}
+                  variant="cards"
+                />
+              </div>
 
               {/* Logout Option */}
               <div className="dash-logout-row">

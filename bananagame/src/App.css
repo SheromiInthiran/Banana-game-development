@@ -4346,3 +4346,560 @@ button, input {
   .session-actions-row { flex-direction: column; }
   .session-stats-breakdown { grid-template-columns: 1fr; }
 }
+
+/* ==========================================================================
+   15. GOOGLE OAUTH MODAL STYLES
+   ========================================================================== */
+
+.google-verified-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #e8f0fe;
+  color: #1a73e8;
+  border: 1.5px solid #4285f4;
+  border-radius: 8px;
+  padding: 1px 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.google-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 38, 28, 0.72);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.google-auth-card {
+  position: relative;
+  background: #ffffff;
+  border: 4px solid #2f2017;
+  border-radius: 28px;
+  max-width: 440px;
+  width: 100%;
+  padding: 32px 28px 24px;
+  box-shadow: 0 14px 0 #2f2017, 0 28px 50px rgba(0, 0, 0, 0.3);
+  animation: popInModal 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.google-modal-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  background: #f1f5f9;
+  color: #475569;
+  border: 2px solid #2f2017;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  font-size: 0.95rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.google-modal-close-btn:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+  transform: scale(1.1);
+}
+
+.google-modal-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.google-modal-logo {
+  margin-bottom: 8px;
+}
+.google-modal-title {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #202124;
+}
+.google-modal-subtitle {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #5f6368;
+  font-weight: 600;
+}
+.google-modal-subtitle strong {
+  color: #2f2017;
+}
+
+.google-accounts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.google-account-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 2.5px solid #e2e8f0;
+  border-radius: 18px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+.google-account-item:hover {
+  background: #fef9c3;
+  border-color: #2f2017;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 #2f2017;
+}
+
+.google-account-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+.add-account-avatar {
+  background: #f1f5f9;
+  color: #475569;
+  border: 2px dashed #94a3b8;
+  font-size: 1.4rem;
+}
+
+.google-account-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.google-account-name {
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: #202124;
+}
+.google-account-email {
+  font-size: 0.82rem;
+  color: #5f6368;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.google-account-arrow {
+  font-size: 1.1rem;
+  color: #94a3b8;
+  transition: transform 0.15s ease;
+}
+.google-account-item:hover .google-account-arrow {
+  color: #2f2017;
+  transform: translateX(3px);
+}
+
+.google-custom-account-form {
+  background: #f8fafc;
+  border: 2.5px solid #2f2017;
+  border-radius: 18px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.google-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.google-input-group label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #475569;
+}
+.google-text-input {
+  padding: 8px 12px;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  font-weight: 600;
+}
+.google-text-input:focus {
+  outline: none;
+  border-color: #4285F4;
+}
+.google-form-error {
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.google-form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.google-submit-btn {
+  flex: 1;
+  background: #4285F4;
+  color: #ffffff;
+  border: 2px solid #2f2017;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #2f2017;
+}
+.google-cancel-btn {
+  background: #ffffff;
+  border: 2px solid #2f2017;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.google-modal-footer {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding-top: 14px;
+  border-top: 1.5px solid #e2e8f0;
+  font-size: 0.72rem;
+  color: #5f6368;
+  line-height: 1.4;
+}
+.google-modal-footer svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   16. COLOR THEME SYSTEM (Emerald, Sunset, Starry Night, Gold, Ocean)
+   ========================================================================== */
+
+/* Theme Selector Trigger & Dropdown in Navbar */
+.theme-selector-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.theme-selector-trigger-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 2.5px solid #2f2017;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #2f2017;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #2f2017;
+  transition: all 0.15s ease;
+}
+.theme-selector-trigger-btn:hover {
+  background: #fef9c3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 #2f2017;
+}
+
+.theme-color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid #2f2017;
+  flex-shrink: 0;
+}
+
+.theme-trigger-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.theme-trigger-arrow {
+  font-size: 0.8rem;
+  color: #64748b;
+  transition: transform 0.2s ease;
+}
+.theme-trigger-arrow.arrow-up {
+  transform: rotate(180deg);
+}
+
+.theme-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: #ffffff;
+  border: 3.5px solid #2f2017;
+  border-radius: 22px;
+  width: 250px;
+  padding: 8px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2), 0 5px 0 #2f2017;
+  z-index: 500;
+  animation: popInModal 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.theme-menu-header {
+  padding: 6px 10px 8px;
+  border-bottom: 2px dashed #e2e8f0;
+  margin-bottom: 6px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.theme-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.theme-option-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.12s ease;
+  font-family: inherit;
+}
+.theme-option-row:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+.theme-option-row.option-selected {
+  background: #fef9c3;
+  border-color: #2f2017;
+  font-weight: 800;
+}
+
+.theme-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #2f2017;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.theme-row-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.theme-row-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #2f2017;
+}
+.theme-row-desc {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 700;
+}
+.theme-check-ico {
+  font-weight: 900;
+  color: #16a34a;
+  font-size: 1rem;
+}
+
+/* Theme Cards Grid (Dashboard & Profile) */
+.theme-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.theme-card-option {
+  background: #ffffff;
+  border: 3px solid #e2e8f0;
+  border-radius: 18px;
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+.theme-card-option:hover {
+  transform: translateY(-2px);
+  border-color: #2f2017;
+  box-shadow: 0 4px 0 #2f2017;
+}
+.theme-card-option.theme-selected {
+  border-color: #2f2017;
+  border-width: 3.5px;
+  box-shadow: 0 5px 0 #2f2017;
+  transform: translateY(-2px);
+}
+
+.theme-card-preview {
+  height: 52px;
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 2px solid #2f2017;
+}
+.theme-card-icon {
+  font-size: 1.6rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}
+.theme-active-tag {
+  position: absolute;
+  bottom: 4px;
+  right: 5px;
+  background: #2f2017;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 1px 6px;
+  border-radius: 6px;
+}
+
+.theme-card-info {
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.theme-card-info strong {
+  font-size: 0.82rem;
+  color: #2f2017;
+}
+.theme-card-info small {
+  font-size: 0.7rem;
+  color: #64748b;
+  font-weight: 800;
+}
+
+.setting-theme-block,
+.profile-theme-picker-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin-top: 6px;
+}
+
+.login-theme-picker-corner {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  z-index: 100;
+}
+
+/* ==========================================================================
+   THEME PALETTE OVERRIDES
+   ========================================================================== */
+
+/* 1. SUNSET CANOPY (theme_sunset) */
+.banana-platform-shell.theme_sunset,
+.banana-game-shell.theme_sunset {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(254, 215, 170, 0.6), transparent 28%),
+    radial-gradient(circle at 85% 15%, rgba(254, 202, 202, 0.5), transparent 32%),
+    linear-gradient(165deg, #ffedd5 0%, #fed7aa 35%, #fecdd3 75%, #fbcfe8 100%) !important;
+}
+.theme_sunset .jungle-navbar {
+  background: rgba(255, 247, 237, 0.95);
+  border-color: #431407;
+}
+.theme_sunset .nav-brand-title {
+  color: #9a3412;
+}
+.theme_sunset .nav-pill-btn.pill-active {
+  background: #ea580c !important;
+  color: #ffffff !important;
+  border-color: #431407;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+}
+.theme_sunset .jungle-sky {
+  background: linear-gradient(180deg, #fdba74 0%, #fb923c 45%, #f43f5e 100%) !important;
+}
+
+/* 2. GOLDEN TEMPLE (theme_gold) */
+.banana-platform-shell.theme_gold,
+.banana-game-shell.theme_gold {
+  background:
+    radial-gradient(circle at 10% 12%, rgba(254, 240, 138, 0.65), transparent 30%),
+    radial-gradient(circle at 90% 15%, rgba(253, 224, 71, 0.5), transparent 32%),
+    linear-gradient(165deg, #fefce8 0%, #fef08a 35%, #fde047 70%, #fed7aa 100%) !important;
+}
+.theme_gold .jungle-navbar {
+  background: rgba(254, 252, 232, 0.95);
+  border-color: #713f12;
+}
+.theme_gold .nav-brand-title {
+  color: #854d0e;
+}
+.theme_gold .nav-pill-btn.pill-active {
+  background: #eab308 !important;
+  color: #422006 !important;
+  border-color: #713f12;
+  box-shadow: 0 4px 10px rgba(234, 179, 8, 0.4);
+}
+.theme_gold .jungle-sky {
+  background: linear-gradient(180deg, #fef08a 0%, #fde047 50%, #f59e0b 100%) !important;
+}
+
+/* 4. OCEAN LAGOON (theme_ocean) */
+.banana-platform-shell.theme_ocean,
+.banana-game-shell.theme_ocean {
+  background:
+    radial-gradient(circle at 15% 15%, rgba(103, 232, 249, 0.5), transparent 28%),
+    radial-gradient(circle at 85% 12%, rgba(186, 230, 253, 0.55), transparent 30%),
+    linear-gradient(165deg, #ccfbf1 0%, #e0f2fe 35%, #bae6fd 75%, #a5f3fc 100%) !important;
+}
+.theme_ocean .jungle-navbar {
+  background: rgba(240, 253, 250, 0.95);
+  border-color: #134e4a;
+}
+.theme_ocean .nav-brand-title {
+  color: #0369a1;
+}
+.theme_ocean .nav-pill-btn.pill-active {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+  border-color: #075985;
+  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.4);
+}
+.theme_ocean .jungle-sky {
+  background: linear-gradient(180deg, #bae6fd 0%, #38bdf8 50%, #0284c7 100%) !important;
+}
